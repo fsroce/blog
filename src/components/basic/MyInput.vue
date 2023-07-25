@@ -15,8 +15,9 @@
  * 失焦时会检测输入是否合格（传入validateFunc）
  */
 import { reactive, PropType } from 'vue'
-
-type validateFunction = (arg: unknown) => (true | false)
+import { rules } from '@/pages/Login/login.vue'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type validateFunction = (arg: any) => (true | false)
 
 const props = defineProps({
   type: {
@@ -31,31 +32,34 @@ const props = defineProps({
     type: String,
     default: '请输入内容'
   },
-  message: {
-    type: String,
-    default: ''
-  },
-  validateFunc: {
-    type: Object as PropType<validateFunction[]>
-  }
+  rules: Object as PropType<rules>
 })
-const emits = defineEmits(['blur', 'change', 'pass'])
+const emits = defineEmits(['blur', 'change', 'update:modelValue'])
 const inputVal = reactive({
   val: props.content,
-  err: false,
-  message: props.message
+  err: true,
+  message: '4545454'
 })
 const inputBlur = () => {
   console.log('blur')
-  let pass = false
+  let pass = false, msg = ''
   const val = inputVal.val
-  const validateFunc = props.validateFunc || false
+  console.log(val)
+  const validateFunc = props.rules || false
   if (validateFunc) {
-    pass = validateFunc.every(func => func(val))
+    pass = validateFunc.every(func => {
+      msg = func.msg
+      console.log(func.validateFunc(val))
+      return func.validateFunc(val)
+    })
+    console.log(pass);
+    inputVal.err = !pass
+    inputVal.message = msg
   } else {
     pass = true
+    inputVal.err = false
   }
-  emits('pass', { val, pass })
+  emits('update:modelValue', inputVal.val)
 }
 const inputChange = () => {
   emits('change', inputVal.val)
@@ -78,22 +82,20 @@ const inputChange = () => {
 .my_input {
   width: 100%;
   margin: 0 auto;
+  position: relative;
 }
 input {
-  width: 80%;
-  height: 1.5625rem;
+  width: 40%;
+  height: 25px;
   padding-left: .625rem;
-  border-radius: .3125rem;
-  display: block;
-  margin: 0 auto;
-  margin-bottom: .3125rem;
   outline: none;
   border-color: rgba(40, 158, 255, .7);
 }
 .errmsg {
-  display: block;
-  margin: 0 auto;
-  width: 80%;
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
   color: red;
 }
 
