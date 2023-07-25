@@ -2,4 +2,12 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 
-createApp(App).use(router).mount("#app");
+import mycomponents from "./components/basic";
+
+const app = createApp(App)
+
+for (const { name, component } of mycomponents) {
+  app.component(name, component)
+}
+
+app.use(router).mount("#app");
