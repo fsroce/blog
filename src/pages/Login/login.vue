@@ -2,7 +2,10 @@
 <script lang="ts" setup>
 import { validateFunction } from '@/components/basic/MyInput.vue'
 import { reactive, ref } from 'vue'
+import useUserStore, { userAbout } from '@/store/user/index'
 import { throttle } from '@/helper/index'
+import axios from 'axios'
+import apis, { responseType } from '@/common/api'
 
 // 登陆事件规则
 const isEmpty: validateFunction = (arg: string | number) => (arg !== undefined && arg !== '')
@@ -18,12 +21,28 @@ const user = reactive({
   name: '',
   pwd: ''
 })
+const upass = ref(false), ppass = ref(false)
+const userStore = useUserStore()
 function login () {
   const passed = ref(false)
   const { name, pwd } = user
-  passed.value = userNameRules.every(rule => rule.validateFunc(name)) && passwordRules.every(rule => rule.validateFunc(pwd))
+  passed.value = upass.value && ppass.value
   if (passed.value) {
     console.log('login', user)
+    axios.post(apis.login, { name, pwd }).then(res => {
+      const data = res.data as responseType<userAbout>
+      // const { data, status } = res
+      if (res.status === 200) {
+        console.log(data)
+        alert('login successfully')
+        userStore.changeState(data.content)
+      } else {
+        alert(data.msg)
+      }
+    }, rej => {
+      console.log(rej.response.data)
+      alert('failed')
+    })
   }
 }
 const submit = throttle(login, 2000, true)
@@ -34,8 +53,8 @@ const submit = throttle(login, 2000, true)
     <div class="container">
       <h1>Welcome</h1>
       <div class="form">
-          <my-input type="text" placeholder="您的账号" :rules="userNameRules" v-model="user.name" />
-          <my-input type="password" placeholder="您的密码" :rules="passwordRules" v-model="user.pwd" />
+          <my-input type="text" @blur="(e: boolean) => upass = e" placeholder="您的账号" :rules="userNameRules" v-model="user.name" />
+          <my-input type="password" @blur="(e: boolean) => ppass = e" placeholder="您的密码" :rules="passwordRules" v-model="user.pwd" />
           <button class="btn-login" @click="submit">登录</button>
       </div>
     </div>

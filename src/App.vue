@@ -2,11 +2,17 @@
   <router-view></router-view>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-  name: 'App',
-  components: {
+<script lang="ts" setup>
+import { onBeforeMount, computed } from 'vue'
+import useUserStore from './store/user'
+import axios from 'axios';
+import apis from './common/api';
+const userStore = useUserStore()
+const islogin = computed(() => userStore.islogin)
+onBeforeMount(() => {
+  const token = localStorage.getItem('blog_token')
+  if (token) {
+    axios.post(apis.fetchUserInfo, { token })
   }
 })
 </script>

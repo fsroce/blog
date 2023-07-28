@@ -37,8 +37,8 @@ const props = defineProps({
 const emits = defineEmits(['blur', 'change', 'update:modelValue'])
 const inputVal = reactive({
   val: props.content,
-  err: true,
-  message: '4545454'
+  err: false,
+  message: ''
 })
 const inputBlur = () => {
   console.log('blur')
@@ -49,17 +49,19 @@ const inputBlur = () => {
   if (validateFunc) {
     pass = validateFunc.every(func => {
       msg = func.msg
-      console.log(func.validateFunc(val))
+      // console.log(func.validateFunc(val))
       return func.validateFunc(val)
     })
-    console.log(pass);
+    // console.log(pass);
     inputVal.err = !pass
     inputVal.message = msg
   } else {
     pass = true
     inputVal.err = false
   }
+  if (typeof inputVal.val === 'string') inputVal.val = inputVal.val.trim()
   emits('update:modelValue', inputVal.val)
+  emits('blur', pass)
 }
 const inputChange = () => {
   emits('change', inputVal.val)
@@ -85,7 +87,7 @@ const inputChange = () => {
   position: relative;
 }
 input {
-  width: 40%;
+  width: 60%;
   height: 25px;
   padding-left: .625rem;
   outline: none;
