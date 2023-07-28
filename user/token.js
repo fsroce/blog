@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const {operationDB, searchDB} = require("../db");
 // 密钥
-const secretKey = 'harlanfsrice567578e56776.77896ft5lambert3GDFHYJ5FG3FFD.KGIUUBGCHVJBKhvnl'
+const {secretKey} = require("./secretKey")
 // token有效期
 const expiresIn = '7d'
 function setToken (payload) {
@@ -42,7 +42,7 @@ async function validateToken(token) {
         // return true
     } catch (e) {
         console.log(e)
-        return Promise.reject('error when handle token')
+        return Promise.reject('error while handling token')
     }
 }
 

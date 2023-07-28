@@ -15,7 +15,7 @@ async function operationDB (func, extraData) {
         await client.connect()
         console.log('连接成功')
         return await func(extraData)
-    } catch(e) {
+    } catch (e) {
         console.log('连接失败', e)
         err = e
     } finally {

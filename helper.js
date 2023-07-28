@@ -47,6 +47,10 @@ function trickProps (obj, props) {
     return ret
 }
 
+function getToken (req) {
+    console.log(req)
+}
+
 module.exports = {
-    notUndefined, responseData, trickProps, pickProps
+    notUndefined, responseData, trickProps, pickProps, getToken
 }
