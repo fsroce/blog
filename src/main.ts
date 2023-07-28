@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { createPinia } from "pinia";
+import pinia from "./store";
 import axios from "axios";
 import mycomponents from "./components/basic";
 
@@ -12,9 +12,8 @@ axios.interceptors.request.use((config) => {
 }, (e) => {
   console.log(e)
 })
-
 const app = createApp(App)
-app.use(createPinia())
+app.use(pinia)
 for (const { name, component } of mycomponents) {
   app.component(name, component)
 }

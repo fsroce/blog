@@ -31,8 +31,7 @@ function login () {
     console.log('login', user)
     axios.post(apis.login, { name, pwd }).then(res => {
       const data = res.data as responseType<userAbout>
-      // const { data, status } = res
-      if (res.status === 200) {
+      if (data.success) {
         console.log(data)
         alert('login successfully')
         userStore.changeState(data.content)
@@ -40,8 +39,7 @@ function login () {
         alert(data.msg)
       }
     }, rej => {
-      console.log(rej.response.data)
-      alert('failed')
+      console.log(rej)
     })
   }
 }
@@ -78,7 +76,6 @@ const submit = throttle(login, 2000, true)
   width: 100%;
   height: 100vh;
   margin: auto;
-  background-color: #bfa;
   padding: 0;
   box-sizing: border-box;
   /* 弹性布局 居中显示 */
