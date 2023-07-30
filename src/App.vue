@@ -1,10 +1,12 @@
 <template>
-  <global-header></global-header>
+  <!-- <global-header></global-header> -->
   <!-- <router-view></router-view> -->
+  <post-detail></post-detail>
 </template>
 
 <script lang="ts" setup>
 import GlobalHeader from '@/components/header.vue'
+import PostDetail from '@/components/post.vue'
 import { onBeforeMount, computed } from 'vue'
 import useUserStore from './store/user'
 import axios from 'axios';
