@@ -28,7 +28,7 @@ function throttle (func: (args: any) => void, timeout = 2000, immediate = false)
           timer = null
         }, timeout)
       } else {
-        console.log('helper throttle提示：点击频率太高')
+        console.log('helper/throttle提示：点击频率太高')
       }
     }
   }

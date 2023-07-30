@@ -1,6 +1,6 @@
 <template>
   <global-header></global-header>
-  <router-view></router-view>
+  <!-- <router-view></router-view> -->
 </template>
 
 <script lang="ts" setup>
@@ -15,11 +15,15 @@ const islogin = computed(() => userStore.islogin)
 onBeforeMount(() => {
   const token = localStorage.getItem('blog_token')
   if (token) {
+    // 本地存有token，获取用户信息
     axios.post(apis.fetchUserInfo, { token }).then(res => {
       const { data } = res
-      userStore.changeState(data.content)
+      if (data.success) {
+        userStore.changeState(data.content)
+      }
     }).catch(e => {
       console.log(e)
+      router.push('/login')
     })
   } else {
     router.push('/login')
