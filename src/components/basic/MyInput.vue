@@ -15,9 +15,9 @@
  * 失焦时会检测输入是否合格（传入validateFunc）
  */
 import { reactive, PropType } from 'vue'
-import { rules } from '@/pages/Login/login.vue'
+import { rules } from '@/pages/Login/loginRules'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type validateFunction = (arg: any) => (true | false)
+export type validateFunction = (...args: any) => (true | false)
 
 const props = defineProps({
   type: {
@@ -44,7 +44,7 @@ const inputBlur = () => {
   console.log('blur')
   let pass = false, msg = ''
   const val = inputVal.val
-  console.log(val)
+  // console.log(val)
   const validateFunc = props.rules || false
   if (validateFunc) {
     pass = validateFunc.every(func => {
@@ -92,6 +92,9 @@ input {
   padding-left: .625rem;
   outline: none;
   border-color: rgba(40, 158, 255, .7);
+}
+.my_input input::-webkit-input-placeholder {
+  color: black;
 }
 .errmsg {
   position: absolute;

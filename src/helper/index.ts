@@ -34,6 +34,14 @@ function throttle (func: (args: any) => void, timeout = 2000, immediate = false)
   }
 }
 
+function createDOM (nodeId: string, tag = 'div') {
+  const node = document.createElement(tag)
+  node.id = nodeId
+  document.body.appendChild(node)
+  return node
+}
+
+
 export {
-  debounce, throttle
+  debounce, throttle, createDOM
 }

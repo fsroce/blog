@@ -1,34 +1,39 @@
 <template>
   <!-- <global-header></global-header> -->
-  <!-- <router-view></router-view> -->
-  <post-detail></post-detail>
+  <router-view></router-view>
+  <!-- <post-detail></post-detail> -->
 </template>
 
 <script lang="ts" setup>
 import GlobalHeader from '@/components/header.vue'
 import PostDetail from '@/components/post.vue'
-import { onBeforeMount, computed } from 'vue'
+import home from './pages/Home/home.vue'
+import { onMounted } from 'vue'
 import useUserStore from './store/user'
-import axios from 'axios';
-import apis from './common/api'
 import router from './router'
 const userStore = useUserStore()
-const islogin = computed(() => userStore.islogin)
-onBeforeMount(() => {
+let path = window.location.pathname
+console.log('App', path);
+onMounted(() => {
   const token = localStorage.getItem('blog_token')
   if (token) {
+    // 防止因token校验带来的闪屏问题
+    userStore.islogin = true
     // 本地存有token，获取用户信息
-    axios.post(apis.fetchUserInfo, { token }).then(res => {
-      const { data } = res
-      if (data.success) {
-        userStore.changeState(data.content)
+    userStore.getUserInfo(token).then(res => {
+      console.log('App', res);
+      if (res) {
+        router.push(path)
+      } else {
+        userStore.islogin = false
+        router.push(`/login/redirect=${path}`)
       }
     }).catch(e => {
+      userStore.islogin = false
+      router.push(`/login/redirect=${path}`)
       console.log(e)
-      router.push('/login')
     })
-  } else {
-    router.push('/login')
+    
   }
 })
 </script>
@@ -36,6 +41,6 @@ onBeforeMount(() => {
 <style>
 #app {
   width: 100%;
-  height: 100vh;
+  height: 99vh;
 }
 </style>

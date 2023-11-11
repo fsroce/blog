@@ -1,27 +1,20 @@
-<!-- eslint-disable vue/multi-word-component-names -->
-<script lang="ts" setup>
-import { validateFunction } from '@/components/basic/MyInput.vue'
+<script setup lang="ts">
 import { reactive, ref } from 'vue'
 import useUserStore, { userAbout } from '@/store/user/index'
 import { throttle } from '@/helper/index'
 import axios from 'axios'
+import { useRoute } from 'vue-router'
 import apis, { responseType } from '@/common/api'
-
-// 登陆事件规则
-const isEmpty: validateFunction = (arg: string | number) => (arg !== undefined && arg !== '')
-export type rules = ({ msg: string, validateFunc: validateFunction })[]
-const userNameRules: rules = [
-  { msg: '账户名不能留空', validateFunc: isEmpty },
-]
-const passwordRules: rules = [
-  { msg: '密码不能为空', validateFunc: isEmpty }
-]
+import router from '@/router'
+import { userNameRules, passwordRules } from './loginRules'
+import useCreateMessage from '@/hooks/useCreateMessage'
 // 登录功能
 const user = reactive({
   name: '',
   pwd: ''
 })
 const upass = ref(false), ppass = ref(false)
+const route = useRoute()
 const userStore = useUserStore()
 function login () {
   const passed = ref(false)
@@ -29,25 +22,35 @@ function login () {
   passed.value = upass.value && ppass.value
   if (passed.value) {
     console.log('login', user)
-    axios.post(apis.login, { name, pwd }).then(res => {
+    axios.post(apis.login, { name, pwd }).then(async res => {
       const data = res.data as responseType<userAbout>
       if (data.success) {
-        console.log(data)
-        alert('login successfully')
+        console.log('login', data)
+        await useCreateMessage('登录成功，两秒后跳转')
         userStore.changeState(data.content)
       } else {
         alert(data.msg)
       }
     }, rej => {
+      useCreateMessage('登录失败')
       console.log(rej)
+    }).finally(() => {
+      console.log('login', route);
+      let redirect = '/'
+      if (route.meta.redirect) {
+        redirect = ''+route.meta.redirect
+        route.meta.redirect = ''
+      }
+      router.push(redirect)
     })
   }
 }
 const submit = throttle(login, 2000, true)
 </script>
-
+<script lang="ts">
+</script>
 <template>
-  <div class="outer">
+  <div class="login_outer">
     <div class="container">
       <h1>Welcome</h1>
       <div class="form">
@@ -72,7 +75,7 @@ const submit = throttle(login, 2000, true)
 </template>
 
 <style>
-.outer {
+.login_outer {
   width: 100%;
   height: 100vh;
   margin: auto;
@@ -154,8 +157,9 @@ const submit = throttle(login, 2000, true)
   position: absolute;
   top: 0;
   left: 0;
-  width: 90%;
-  height: 90%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .bg-squares li{
   width: 40px;
