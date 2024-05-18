@@ -1,11 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function debounce (func: (args: any) => any, timeout = 2000) {
-  let timer: number | null = null
+  let timer: undefined | NodeJS.Timeout = undefined
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function(...args: any) {
     if (timer) {
       clearTimeout(timer)
-      timer = null
+      timer = undefined
     }
     timer = setTimeout(func(args), timeout)
   }
@@ -14,7 +14,7 @@ function debounce (func: (args: any) => any, timeout = 2000) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function throttle (func: (args: any) => void, timeout = 2000, immediate = false) {
   let flag = false
-  let timer: null | number = null
+  let timer: undefined | NodeJS.Timeout = undefined
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function (...args: any) {
     if (immediate || flag) {
@@ -25,7 +25,7 @@ function throttle (func: (args: any) => void, timeout = 2000, immediate = false)
       if (!timer) {
         timer = setTimeout(() => {
           flag = true
-          timer = null
+          timer = undefined
         }, timeout)
       } else {
         console.log('helper/throttle提示：点击频率太高')
