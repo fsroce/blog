@@ -57,6 +57,7 @@ const submit = throttle(login, 2000, true)
           <my-input type="text" @blur="(e: boolean) => upass = e" placeholder="您的账号" :rules="userNameRules" v-model="user.name" />
           <my-input type="password" @blur="(e: boolean) => ppass = e" placeholder="您的密码" :rules="passwordRules" v-model="user.pwd" />
           <button class="btn-login" @click="submit">登录</button>
+          <button class="btn-login" @click="router.push('/sign')">前往注册</button>
       </div>
     </div>
     <ul class="bg-squares">
@@ -147,6 +148,7 @@ const submit = throttle(login, 2000, true)
   font-size: 15px;
   cursor: pointer;
   transition: 0.25s;
+  margin-bottom: 20px;
 }
 .btn-login:hover{
   background-color: #f5f7f9;

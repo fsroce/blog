@@ -54,7 +54,20 @@ const signup = () => {
         <my-input type="password" placeholder="您的密码" :rules="passwordRules" v-model="userInfo.pwd" @blur="(e: boolean) => allpass.pwd = e" />
         <my-input type="password" placeholder="重复密码" :rules="repeatPasswordRules" v-model="userInfo.confirmPwd" @blur="(e: boolean) => allpass.confirmpwd = e" />
         <button class="btn-login" @click="signup">注册</button>
+        <button class="btn-login" @click="router.push('/login')">前往登录</button>
       </div>
+      <ul class="bg-squares">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
     </div>
   </div>
 </template>

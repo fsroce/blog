@@ -11,6 +11,7 @@ import home from './pages/Home/home.vue'
 import { onMounted } from 'vue'
 import useUserStore from './store/user'
 import router from './router'
+import { useSetLoading } from './hooks/useSetLoading'
 const userStore = useUserStore()
 let path = window.location.pathname
 console.log('App', path);
@@ -33,9 +34,12 @@ onMounted(() => {
       router.push(`/login/redirect=${path}`)
       console.log(e)
     })
-    
   }
 })
+useSetLoading(true)
+setTimeout(() => {
+  useSetLoading(false)
+}, 5000)
 </script>
 
 <style>
