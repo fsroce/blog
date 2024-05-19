@@ -5,7 +5,7 @@ import pinia from "./store";
 import axios from "axios";
 import mycomponents from "./components/basic";
 
-axios.defaults.baseURL = 'http://localhost:8080'
+axios.defaults.baseURL = 'http://localhost:5050'
 axios.defaults.headers.common['Authorization'] = localStorage.getItem('token') || ''
 axios.interceptors.request.use((config) => {
   return config

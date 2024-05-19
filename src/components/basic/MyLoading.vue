@@ -13,6 +13,8 @@
   height: 100vh;
   background-color: rgba(188, 143, 143, .6);
   position: absolute;
+  top: 0;
+  left: 0;
   /* 使loading 层覆盖整个页面 从而阻止点击事件 */
   z-index: 99999;
 }

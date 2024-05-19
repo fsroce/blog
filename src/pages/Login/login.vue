@@ -1,54 +1,23 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import useUserStore, { userAbout } from '@/store/user/index'
-import { throttle } from '@/helper/index'
-import axios from 'axios'
-import { useRoute } from 'vue-router'
-import apis, { responseType } from '@/common/api'
-import router from '@/router'
+import useUserStore from '@/store/user/index'
 import { userNameRules, passwordRules } from './loginRules'
-import useCreateMessage from '@/hooks/useCreateMessage'
+import { throttle } from '@/helper/index'
+import { useRouter } from 'vue-router'
 // 登录功能
 const user = reactive({
   name: '',
   pwd: ''
 })
 const upass = ref(false), ppass = ref(false)
-const route = useRoute()
 const userStore = useUserStore()
+const router = useRouter()
 function login () {
-  const passed = ref(false)
-  const { name, pwd } = user
-  passed.value = upass.value && ppass.value
-  if (passed.value) {
-    console.log('login', user)
-    axios.post(apis.login, { name, pwd }).then(async res => {
-      const data = res.data as responseType<userAbout>
-      if (data.success) {
-        console.log('login', data)
-        await useCreateMessage('登录成功，两秒后跳转')
-        userStore.changeState(data.content)
-      } else {
-        alert(data.msg)
-      }
-    }, rej => {
-      useCreateMessage('登录失败')
-      console.log(rej)
-    }).finally(() => {
-      console.log('login', route);
-      let redirect = '/'
-      if (route.meta.redirect) {
-        redirect = ''+route.meta.redirect
-        route.meta.redirect = ''
-      }
-      router.push(redirect)
-    })
-  }
+  upass.value && ppass.value && userStore.userLogin(user)
 }
 const submit = throttle(login, 2000, true)
 </script>
-<script lang="ts">
-</script>
+
 <template>
   <div class="login_outer">
     <div class="container">

@@ -11,7 +11,10 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: 2020,
+    sourceType: "moudle",
+    parser: '@typescript-eslint/parser'
   },
+  plugins: ['vue', '@typescript-eslint'],
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",

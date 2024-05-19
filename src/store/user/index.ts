@@ -1,6 +1,18 @@
-import apis, { responseType } from '@/common/api'
+import apis from '@/common/api'
+import { setLoading } from '@/helper'
+import useCreateMessage from '@/hooks/useCreateMessage'
+import router from '@/router'
 import axios from 'axios'
 import { defineStore } from 'pinia'
+
+export interface IBriefPost {
+  postId: number
+  userId: number
+  img?: string
+  excerpt?: string
+  title?: string
+  updateTime?: string
+}
 
 export interface userAbout {
   islogin?: boolean
@@ -9,7 +21,7 @@ export interface userAbout {
   avatar?: string
   identity?: string
   token?: string
-  postsId?: number[]
+  posts?: IBriefPost[]
 }
 
 const useUserStore = defineStore('userAbout', {
@@ -18,7 +30,7 @@ const useUserStore = defineStore('userAbout', {
     userId: 0,
     avatar: '',
     islogin: false,
-    postsId: []
+    posts: []
   }),
   actions: {
     changeState ({ userName, avatar, identity, token, userId }: userAbout) {
@@ -29,30 +41,52 @@ const useUserStore = defineStore('userAbout', {
       // 完成登录后的鉴权
       token && (axios.defaults.headers.common.Authorization = token)
     },
+    async userLogin ({ name, pwd }: { name: string, pwd: string }) {
+      console.log('user login loading...')
+      setLoading(true)
+      try {
+        const { data } = await axios.post(apis.login, { name, pwd })
+        if (data.success) {
+          this.changeState(data.content)
+          useCreateMessage('登录成功，两秒后跳转')
+          router.push('/')
+        } else {
+          console.log(data.msg)
+        }
+        console.log('login', data)
+        setLoading(false)
+        console.log('user login loaded')
+        return data.success
+      } catch (e) {
+        setLoading(false)
+      }
+      return false
+    },
     async getUserInfo(token: string) {
       token = token ? token : localStorage.getItem('blog_token') as string
-      const { data } = await axios.post(apis.fetchUserInfo, { token })
-      if (data.success) {
-        this.changeState(data.content)
-      } else {
-        // TODO
+      try {
+        console.log('get user info loading...');
+        setLoading(true)
+        const { data } = await axios.post(apis.fetchUserInfo, { token })
+        console.log(data)
+        if (data.success) {
+          this.changeState(data.content)
+          await this.getPosts(data.content.userId)
+        } else {
+          router.push('/login')
+        }
+        setLoading(false)
+        console.log('get user info loaded');
+        return data.success
+      } catch (e) {
+        setLoading(false)
       }
-      return data.success
+      return false
     },
-    getPosts () {
-      const userId = this.userId
-      if (userId !== undefined) {
-        axios.get(`${apis.posts}/${userId}`).then(res => {
-          const { data } = res
-          if (data.success) {
-            const { content } = data
-            this.postsId = content
-          } else {
-            alert(data.msg)
-          }
-        }, rej => {
-          console.log(rej)
-        })
+    async getPosts (userId: number | string) {
+      const { data } = await axios.get(`${apis.posts}/${userId}`)
+      if (data.success) {
+        this.$patch({ posts: data.content })
       }
     }
   }

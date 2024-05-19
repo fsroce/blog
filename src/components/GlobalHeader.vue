@@ -42,7 +42,7 @@ watch(isClickOutside, () => {
   <div class="header_outer">
     <div class="header_inner_box">
       <h3 class="title" @click="homePage">
-        <a>fsrice blog</a>
+        <a>fsrice notes</a>
       </h3>
       <div class="user_center"
         @click="isOpen=!isOpen"
@@ -62,6 +62,7 @@ watch(isClickOutside, () => {
   width: 100%;
   height: 3.75rem;
   background-color: #bfa;
+  user-select: none;
 }
 .header_inner_box {
   position: relative;

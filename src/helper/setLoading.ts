@@ -1,5 +1,5 @@
 import MyLoading from '@/components/basic/MyLoading.vue'
-import { createDOM } from '@/helper'
+import { createDOM } from './index'
 import { h, render } from 'vue'
 
 function setLoading (loading: boolean) {
@@ -15,4 +15,4 @@ function setLoading (loading: boolean) {
   }
 }
 
-export { setLoading as useSetLoading }
+export default setLoading

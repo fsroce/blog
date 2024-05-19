@@ -1,17 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import { computed } from 'vue'
 import LoginPage from '@/pages/Login/login.vue'
-import useUserStore from "@/store/user"
-import pinia from "@/store"
 import post from '@/components/post.vue'
+import Home from '@/pages/Home/home.vue'
 import SignUp from '@/pages/SignUp/SignUp.vue'
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/post/:id',
-    component: post,
-    meta: {
-      allowNoLogin: true
-    }
+    path: '/',
+    component: Home
   }, {
     path: '/login',
     component: LoginPage,
@@ -37,32 +32,29 @@ const routes: Array<RouteRecordRaw> = [
     }
   }
 ];
-
-const userStore = useUserStore(pinia)
-const login = computed(() => userStore.islogin)
-let redirect = ''
+// let redirect = ''
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  console.log('to', to);
-  console.log('from', from);
-  console.log(login.value);
-  
-  if (!login.value) {
-    if (to.meta.allowNoLogin) {
-      to.meta.redirect = redirect
-      next()
-    } else {
-      redirect = to.path
-      next('/login')
-    }
-  } else {
-    if (to.path === '/login') next('/')
-    else next()
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   const userStore = useUserStore()
+//   const login = computed(() => userStore.islogin)
+//   // redirect = (getUrlParams(to.path).redirect || '') as string
+//   console.log('to', to);
+//   console.log('from', from);
+//   // TODO: 增加重定向能力
+//   if (to.meta.allowNoLogin) {
+//     next()
+//   } else {
+//     if (login.value) {
+//       next()
+//     } else {
+//       // next(`/login${ redirect ? `?redirect=${ redirect }` : '' }`)
+//       next('/login')
+//     }
+//   }
+// })
 
 export default router;

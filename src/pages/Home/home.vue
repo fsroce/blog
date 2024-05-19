@@ -1,16 +1,24 @@
 <script lang="ts" setup>
-import post from '@/components/post.vue'
 import useUserStore from '@/store/user';
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import GlobalHeader from '@/components/GlobalHeader.vue'
+import BriefPost from '@/components/BriefPost.vue'
+
+// test
+import { setLoading } from '@/helper'
+
 const userStore = useUserStore()
+const posts = computed(() => userStore.posts)
 onMounted(() => {
-  userStore.getPosts()
+  console.log('home mounted')
 })
 </script>
 
 <template>
-  <div></div>
-  <post></post>
+  <global-header />
+  <template v-for="(post) in posts" :key="post.postId">
+    <brief-post :post="post" />
+  </template>
 </template>
 
 <style scoped></style>
