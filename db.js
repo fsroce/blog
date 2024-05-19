@@ -1,4 +1,5 @@
 const { MongoClient, ObjectId} = require('mongodb')
+const {query} = require("express");
 const url = 'mongodb://127.0.0.1:27017/'
 const client = new MongoClient(url)
 const dbName = 'fsblog'
@@ -13,17 +14,9 @@ async function operationDB (func, extraData) {
     let err = null
     try {
         await client.connect()
-        console.log('连接成功')
         return await func(extraData)
     } catch (e) {
-        console.log('连接失败', e)
-        err = e
-    } finally {
-        await client.close()
-        if (err) {
-            return Promise.reject(err)
-        }
-        console.log('关闭连接')
+        return await Promise.reject(e)
     }
 }
 
@@ -38,10 +31,10 @@ async function searchDB ({ name, query}) {
     try {
         const database = client.db(dbName).collection(name)
         const result = await database.find(query).toArray()
-        console.log('查询成功')
+        // console.log('查询成功', result, name, query)
         return Promise.resolve(result)
     } catch (e) {
-        console.log('查询失败', e)
+        // console.log('查询失败', e)
         return Promise.reject(e)
     }
 }
@@ -53,6 +46,7 @@ async function searchDB ({ name, query}) {
  * @returns {Promise<number>}
  */
 async function addPropsToDB ({ name, data }) {
+    // console.log(name, data)
     try {
         const db = client.db(dbName).collection(name)
         switch (name) {
@@ -77,10 +71,12 @@ async function addPropsToDB ({ name, data }) {
  * @param newData
  * @returns {Promise<UpdateResult<Document>>}
  */
-async function changeDB({ name, oldData, newData }) {
+async function changeDB({ name, filter, newData }) {
     try {
         const db = client.db(dbName).collection(name)
-        return await db.updateOne(oldData, newData)
+        // console.log(filter, newData)
+        newData = { $set: newData }
+        return await db.updateOne(filter, newData)
     } catch (e) {
         console.log('更改失败', e)
         return Promise.reject(e)

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const {operationDB, searchDB} = require("../db");
+const {operationDB, searchDB, deleteDB} = require("../db");
 // 密钥
 const {secretKey} = require("./secretKey")
 // token有效期
@@ -13,10 +13,10 @@ function setToken (payload) {
  * @param token
  * @returns {Promise<*>}
  */
-async function verifyToken (token) {
+function verifyToken (token) {
     if (!token) return Promise.reject(0)
     try {
-        return await jwt.verify(token, secretKey)
+        return jwt.verify(token, secretKey)
     } catch (e) {
         console.log('验证token失败', e)
         return Promise.reject(e)
@@ -32,13 +32,13 @@ async function validateToken(token) {
     if (!token) return Promise.reject(false)
     try {
         // 验证token是否过期
-        const dt =  await operationDB(searchDB, { name: 'oldToken' }) || []
+        const dt =  await operationDB(searchDB, { name: 'oldToken', query: { token } }) || []
         for (let val of dt) {
             if (val.token === token) {
                 return Promise.reject('token expired')
             }
         }
-        return await verifyToken(token)
+        return verifyToken(token)
         // return true
     } catch (e) {
         console.log(e)

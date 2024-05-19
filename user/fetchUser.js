@@ -1,4 +1,4 @@
-const {responseData, trickProps} = require("../helper");
+const {responseData, pickProps} = require("../helper");
 const {validateToken} = require("./token");
 const {operationDB, searchDB} = require("../db");
 
@@ -8,15 +8,20 @@ const {operationDB, searchDB} = require("../db");
 async function fetchUser (req, res) {
     const data = responseData()
     const token = req.body.token
-    console.log(token)
+    // console.log(token)
     try {
         if (!token) await Promise.reject('空的token值')
         const { userId } = await validateToken(token)
         let dt
+        console.log(userId, 16)
         dt = await operationDB(searchDB, { name: 'user', query: { userId } })
-        if (dt.length > 1) (res.statusCode = 500) && await Promise.reject('internal err, repeated id')
+        console.log(dt, 'fetchUser', 18)
+        if (dt.length > 1) {
+            res.statusCode = 500
+            await Promise.reject('internal err, repeated id')
+        }
         dt[0].userName = dt[0].name
-        dt = trickProps(dt[0], ['_id', 'pwd', 'name'])
+        dt = pickProps(dt[0], ['userName', 'userId', 'avatar'])
         res.statusCode = 200
         data.success = true
         data.content = dt
