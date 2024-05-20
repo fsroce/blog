@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import LoginPage from '@/pages/Login/login.vue'
-import post from '@/components/post.vue'
+import PostDetail from '@/pages/Posts/PostDetail.vue'
 import Home from '@/pages/Home/home.vue'
 import SignUp from '@/pages/SignUp/SignUp.vue'
 const routes: Array<RouteRecordRaw> = [
@@ -21,6 +21,9 @@ const routes: Array<RouteRecordRaw> = [
       allowNoLogin: true,
       redirect: ''
     }
+  }, {
+    path: '/posts/:postId',
+    component: PostDetail
   }
   , {
     path: '/:pathMatch(.*)*',

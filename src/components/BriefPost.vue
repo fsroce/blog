@@ -1,19 +1,24 @@
 <script lang="ts" setup>
-import { PropType } from 'vue';
+import { PropType, onMounted } from 'vue';
 import { IBriefPost } from '@/store/user/index'
+import router from '@/router';
+import useUserStore from '@/store/user/index';
 const props = defineProps({
   post: {
     type: Object as PropType<IBriefPost>,
     required: true
   }
 })
-console.log(props.post)
+const userInfo = useUserStore()
+onMounted(() => {
+  userInfo.getPosts(userInfo.userId)
+})
 </script>
 
 <template>
   <div id="outer">
     <img id="pic" :src="props.post.img && props.post.img" />
-    <div id="content">
+    <div id="content" @click="router.push(`/posts/${post.postId}`)">
       <h3>{{ props.post.title }}</h3>
       <p>{{ props.post.excerpt }}</p>
       <div id="date">{{ props.post.updateTime }}</div>

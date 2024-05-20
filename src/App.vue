@@ -1,11 +1,11 @@
 <template>
-  <!-- <global-header></global-header> -->
+  <global-header v-if="userStore.islogin"></global-header>
   <router-view></router-view>
   <!-- <post-detail></post-detail> -->
 </template>
 
 <script lang="ts" setup>
-// import GlobalHeader from '@/components/header.vue'
+import GlobalHeader from '@/components/GlobalHeader.vue'
 // import PostDetail from '@/components/post.vue'
 // import home from './pages/Home/home.vue'
 import { onMounted } from 'vue'
@@ -28,6 +28,8 @@ onMounted(async () => {
 <style>
 #app {
   width: 100%;
+  max-width: 1200px;
   height: 99vh;
+  margin: 0 auto;
 }
 </style>

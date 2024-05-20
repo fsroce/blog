@@ -6,6 +6,7 @@ import axios from "axios";
 import mycomponents from "./components/basic";
 
 axios.defaults.baseURL = 'http://localhost:5050'
+// axios.defaults.baseURL = 'https://blog.xpd.pub'
 axios.defaults.headers.common['Authorization'] = localStorage.getItem('token') || ''
 axios.interceptors.request.use((config) => {
   return config
