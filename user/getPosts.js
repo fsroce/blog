@@ -13,7 +13,7 @@ async function getPosts (req, res) {
             await Promise.reject('空的userId')
         }
         dt = await operationDB(searchDB, { name: 'posts', query: { userId: +userId } })
-        console.log(dt)
+        // console.log(dt)
         data.success = true
         data.content = dt.map((post) => trickProps(post, ['_id', 'content']))
     } catch (e) {
