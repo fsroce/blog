@@ -3,6 +3,7 @@ import LoginPage from '@/pages/Login/login.vue'
 import PostDetail from '@/pages/Posts/PostDetail.vue'
 import Home from '@/pages/Home/home.vue'
 import SignUp from '@/pages/SignUp/SignUp.vue'
+import EditPost from '@/pages/Posts/EditPost.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -24,8 +25,10 @@ const routes: Array<RouteRecordRaw> = [
   }, {
     path: '/posts/:postId',
     component: PostDetail
-  }
-  , {
+  },{
+    path: '/edit/:postId',
+    component: EditPost
+  }, {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/pages/NotFound.vue'),

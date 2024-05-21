@@ -11,9 +11,6 @@ importers:
       '@types/markdown-it':
         specifier: ^13.0.5
         version: 13.0.8
-      '@types/node':
-        specifier: ^20.12.12
-        version: 20.12.12
       axios:
         specifier: ^1.4.0
         version: 1.6.8
@@ -23,6 +20,9 @@ importers:
       markdown-it:
         specifier: ^13.0.2
         version: 13.0.2
+      nanoid:
+        specifier: ^5.0.7
+        version: 5.0.7
       pinia:
         specifier: ^2.1.4
         version: 2.1.7(typescript@4.5.5)(vue@3.4.27(typescript@4.5.5))
@@ -36,6 +36,9 @@ importers:
         specifier: ^4.0.3
         version: 4.3.2(vue@3.4.27(typescript@4.5.5))
     devDependencies:
+      '@types/node':
+        specifier: ^20.12.12
+        version: 20.12.12
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.4.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0(eslint@7.32.0)(typescript@4.5.5))(eslint@7.32.0)(typescript@4.5.5)
@@ -2843,6 +2846,11 @@ packages:
   nanoid@3.3.7:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==, tarball: https://registry.npmmirror.com/nanoid/-/nanoid-3.3.7.tgz}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  nanoid@5.0.7:
+    resolution: {integrity: sha512-oLxFY2gd2IqnjcYyOXD8XGCftpGtZP2AbHbOkthDkvRywH5ayNtPVy9YlOPcHckXzbLTCHpkb7FB+yuxKV13pQ==, tarball: https://registry.npmmirror.com/nanoid/-/nanoid-5.0.7.tgz}
+    engines: {node: ^18 || >=20}
     hasBin: true
 
   natural-compare-lite@1.4.0:
@@ -7218,6 +7226,8 @@ snapshots:
       thenify-all: 1.6.0
 
   nanoid@3.3.7: {}
+
+  nanoid@5.0.7: {}
 
   natural-compare-lite@1.4.0: {}
 
