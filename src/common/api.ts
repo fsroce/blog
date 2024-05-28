@@ -36,6 +36,7 @@ const apis: apiType = {
   // posts
   fetchPost: '/fetchPost',// 获取帖子详情
   deletePost: '/deletePost',// 删除帖子
+  updPost: '/updPost', // 更新帖子
 }
 
 export default apis

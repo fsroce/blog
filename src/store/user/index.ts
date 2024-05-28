@@ -48,7 +48,7 @@ const useUserStore = defineStore('userAbout', {
         const { data } = await axios.post(apis.login, { name, pwd })
         if (data.success) {
           this.changeState(data.content)
-          useCreateMessage('登录成功，两秒后跳转')
+          await useCreateMessage('登录成功，两秒后跳转')
           router.push('/')
         } else {
           console.log(data.msg)

@@ -9,7 +9,7 @@ export interface Ipost {
   excerpt?: string
   img?: string
   postId: number
-  updateTime: Date
+  updateTime: Date | number | string
   userId?: number
   userName?: string
   title: string
@@ -32,7 +32,7 @@ const usePostDetail = defineStore('PostDetail', {
       try {
         setLoading(true)
         const { data } = await axios.get<responseType<Ipost>>(`${apis.fetchPost}/${postId}`)
-        console.log('post detail', data);
+        // console.log('post detail', data);
         setLoading(false)
         if (data.success) {
           this.$state[postId] = data.content
@@ -59,6 +59,17 @@ const usePostDetail = defineStore('PostDetail', {
         console.log(e);
       }
       return false
+    },
+    async getUpdedPost (postId: number | string) {
+      try {
+        const { data } = await axios.get<responseType<Ipost>>(`${apis.fetchPost}/${postId}`)
+        if (data.success) {
+          this.$state[postId] = data.content
+          return true
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 })
