@@ -5,7 +5,7 @@ const {secretKey} = require("./secretKey")
 // token有效期
 const expiresIn = '7d'
 function setToken (payload) {
-    return jwt.sign(payload, secretKey, { expiresIn })
+  return jwt.sign(payload, secretKey, { expiresIn })
 }
 
 /**
@@ -14,13 +14,13 @@ function setToken (payload) {
  * @returns {Promise<*>}
  */
 function verifyToken (token) {
-    if (!token) return Promise.reject(0)
-    try {
-        return jwt.verify(token, secretKey)
-    } catch (e) {
-        console.log('验证token失败', e)
-        return Promise.reject(e)
-    }
+  if (!token) return Promise.reject(0)
+  try {
+    return jwt.verify(token, secretKey)
+  } catch (e) {
+    console.log('验证token失败', e)
+    return Promise.reject(e)
+  }
 }
 
 /**
@@ -29,23 +29,22 @@ function verifyToken (token) {
  * @returns {Promise<*|boolean>}
  */
 async function validateToken(token) {
-    if (!token) return Promise.reject(false)
-    try {
-        // 验证token是否过期
-        const dt =  await operationDB(searchDB, { name: 'oldToken', query: { token } }) || []
-        for (let val of dt) {
-            if (val.token === token) {
-                return Promise.reject('token expired')
-            }
-        }
-        return verifyToken(token)
-        // return true
-    } catch (e) {
-        console.log(e)
-        return Promise.reject('error while handling token')
+  if (!token) return Promise.reject(false)
+  try {
+    // 验证token是否过期
+    const dt =  await operationDB(searchDB, { name: 'oldToken', query: { token } }) || []
+    for (let val of dt) {
+      if (val.token === token) {
+        return Promise.reject('token expired')
+      }
     }
+    return verifyToken(token)
+  } catch (e) {
+    console.log(e)
+    return Promise.reject('error while handling token')
+  }
 }
 
 module.exports = {
-    setToken, validateToken
+  setToken, validateToken
 }

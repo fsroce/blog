@@ -6,6 +6,7 @@ const {register} = require("./user/addUser");
 const {getPost} = require("./posts/getPost");
 const { deletePost } = require('./posts/deletePost');
 const {updPost} = require('./posts/updatePost');
+const {logout} = require('./user/logout')
 const router = express.Router()
 
 
@@ -16,6 +17,7 @@ router.post('/register', register)
 router.post('/updPost', updPost)
 router.get('/fetchPost/:postId', getPost)
 router.post('/deletePost', deletePost)
+router.post('/logout', logout)
 module.exports = {
     router
 }
