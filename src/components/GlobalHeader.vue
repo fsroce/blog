@@ -1,14 +1,16 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, watch, defineOptions } from 'vue'
 import router from '@/router';
 import { droptearMeau } from './droptears.vue';
 import DropTear from './droptears.vue';
 import useClickOutside from '@/hooks/useClickOutside'
-// eslint-disable-next-line no-undef
+import useConfirm from '@/hooks/useConfirm';
+import useUserStore from '@/store/user';
 defineOptions({
   name: 'GlobalHeader'
 })
+const userInfo = useUserStore()
 const userDropOptions: droptearMeau[] = [
   { 
     description: '个人中心',
@@ -16,11 +18,15 @@ const userDropOptions: droptearMeau[] = [
   },
   { 
     description: '我的文章',
-    func: () => { router.push('/myPosts') }
+    func: () => { router.push('/') }
   },
   {
     description: '退出登录',
-    func: () => { router.push('/logout') }
+    func: () => {
+      useConfirm('确定要退出登录吗？', () => {
+        userInfo.userLogout()
+      })
+    }
   }
 ]
 const homePage = () => {

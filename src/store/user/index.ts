@@ -88,6 +88,26 @@ const useUserStore = defineStore('userAbout', {
       if (data.success) {
         this.$patch({ posts: data.content })
       }
+    },
+    userLogout () {
+      axios.post(apis.logout, {
+        token: localStorage.getItem('blog_token'),
+        userId: this.userId
+      }).then(async res => {
+        const { data } = res
+        if (data.success) {
+          await useCreateMessage('退出成功，两秒后跳转')
+          this.$patch({
+            userName: '',
+            userId: 0,
+            avatar: '',
+            islogin: false,
+            posts: []
+          })
+          localStorage.removeItem('blog_token')
+          router.push('/login')
+        }
+      })
     }
   }
 })

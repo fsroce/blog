@@ -8,6 +8,7 @@
 import GlobalHeader from '@/components/GlobalHeader.vue'
 // import PostDetail from '@/components/post.vue'
 // import home from './pages/Home/home.vue'
+// import myConfirm from './Test/myConfirm.vue'
 import { onMounted } from 'vue'
 import useUserStore from '@/store/user'
 import router from './router'

@@ -10,6 +10,7 @@ import axios from 'axios';
 import apis from '@/common/api';
 import useCreateMessage from '@/hooks/useCreateMessage';
 import router from '@/router';
+import useConfirm from '@/hooks/useConfirm';
 const md = new MarkdownIt()
 const userInfo = useUserStore()
 const posts = usePostDetail()
@@ -56,7 +57,9 @@ const updArtical = () => {
   }
 }
 const cancelUpd = () => {
-  //
+  useConfirm('确定取消编辑吗？', () => {
+    router.push('/')
+  })
 }
 watchEffect(() => {
   if (!clickArea.content) {
@@ -93,13 +96,13 @@ watchEffect(() => {
       <button @click="cancelUpd">取消</button>
     </div>
   </div>
-  <div id="notAuthor" v-else></div>
+  <div id="notAuthor" v-else>
+    <h2>仅限作者访问</h2>
+  </div>
 </template>
 
 <style scoped>
 #isAuthor {
   background-color: yellowgreen;
 }
-
-#notAuthor {}
 </style>

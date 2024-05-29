@@ -22,7 +22,7 @@ defineProps(['msg'])
   </teleport>
 </template>
 
-<style>
+<style scoped>
 #message {
   position: absolute;
   top: 0;

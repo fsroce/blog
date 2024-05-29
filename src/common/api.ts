@@ -37,6 +37,7 @@ const apis: apiType = {
   fetchPost: '/fetchPost',// 获取帖子详情
   deletePost: '/deletePost',// 删除帖子
   updPost: '/updPost', // 更新帖子
+  logout: '/logout',// 退出登陆
 }
 
 export default apis

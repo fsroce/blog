@@ -15,8 +15,7 @@ const useCreateMessage = (msg: string, timeout = 2000) => {
   } else {
     mountNode = createDOM('message')
   }
-  
-  document.body.appendChild(mountNode)
+
   render(Vnode, mountNode)
 
   if (timeout) {
