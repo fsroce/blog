@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { postsApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 
@@ -68,7 +70,11 @@ function PostDetail() {
           <> • Updated {new Date(post.updated_at).toLocaleDateString()}</>
         )}
       </div>
-      <div className="content">{post.content}</div>
+      <div className="content markdown-content">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {post.content}
+        </ReactMarkdown>
+      </div>
 
       {isAuthor && (
         <div className="post-actions">

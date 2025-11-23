@@ -434,3 +434,129 @@ a:hover {
     padding-right: max(15px, env(safe-area-inset-right));
   }
 }
+
+/* Markdown Content Styles */
+.markdown-content {
+  line-height: 1.8;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.markdown-content h1 { font-size: 1.75rem; }
+.markdown-content h2 { font-size: 1.5rem; }
+.markdown-content h3 { font-size: 1.25rem; }
+.markdown-content h4 { font-size: 1.1rem; }
+
+.markdown-content p {
+  margin-bottom: 1em;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 1em;
+  padding-left: 2em;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5em;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #0066cc;
+  padding-left: 1em;
+  margin: 1em 0;
+  color: #555;
+  font-style: italic;
+}
+
+.markdown-content code {
+  background: #f4f4f4;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9em;
+}
+
+.markdown-content pre {
+  background: #f4f4f4;
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content pre code {
+  background: none;
+  padding: 0;
+}
+
+.markdown-content a {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 1em 0;
+}
+
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.markdown-content th,
+.markdown-content td {
+  border: 1px solid #ddd;
+  padding: 0.75em;
+  text-align: left;
+}
+
+.markdown-content th {
+  background: #f4f4f4;
+  font-weight: 600;
+}
+
+.markdown-content hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 2em 0;
+}
+
+.markdown-content input[type="checkbox"] {
+  margin-right: 0.5em;
+}
+
+/* Mobile markdown adjustments */
+@media (max-width: 768px) {
+  .markdown-content h1 { font-size: 1.5rem; }
+  .markdown-content h2 { font-size: 1.3rem; }
+  .markdown-content h3 { font-size: 1.15rem; }
+
+  .markdown-content pre {
+    padding: 0.75em;
+    font-size: 0.85em;
+  }
+
+  .markdown-content table {
+    font-size: 0.9em;
+  }
+
+  .markdown-content th,
+  .markdown-content td {
+    padding: 0.5em;
+  }
+}
