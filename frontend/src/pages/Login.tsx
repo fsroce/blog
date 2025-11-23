@@ -2,29 +2,21 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { useAsync } from '../hooks/useAsync';
 
-function Login() {
+export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { loading, error, execute } = useAsync();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const response = await authApi.login({ email, password });
-      login(response.data.token, response.data.user);
+    const result = await execute(() => authApi.login({ email, password }).then(r => r.data));
+    if (result) {
+      login(result.token, result.user);
       navigate('/');
-    } catch (err: unknown) {
-      const axiosError = err as { response?: { data?: { error?: string } } };
-      setError(axiosError.response?.data?.error || 'Login failed');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -40,7 +32,7 @@ function Login() {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
             />
           </div>
@@ -50,7 +42,7 @@ function Login() {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
             />
           </div>
@@ -65,5 +57,3 @@ function Login() {
     </div>
   );
 }
-
-export default Login;

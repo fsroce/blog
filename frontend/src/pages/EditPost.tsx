@@ -2,66 +2,51 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { postsApi } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { useAsync } from '../hooks/useAsync';
+import { Post } from '../types';
 
-function EditPost() {
+export default function EditPost() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
+  const { loading, error, execute, setError } = useAsync<Post>();
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await postsApi.getOne(id!);
-        const post = response.data;
-
-        if (post.author_id !== user?.id) {
-          navigate('/');
-          return;
-        }
-
-        setTitle(post.title);
-        setContent(post.content);
-      } catch (err) {
-        setError('Post not found');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (isAuthenticated) {
-      fetchPost();
-    } else {
+    if (!isAuthenticated) {
       navigate('/login');
+      return;
     }
-  }, [id, isAuthenticated, user, navigate]);
+
+    execute(async () => {
+      const { data: post } = await postsApi.getOne(id!);
+      if (post.author_id !== user?.id) {
+        navigate('/');
+        throw new Error('Not authorized');
+      }
+      setTitle(post.title);
+      setContent(post.content);
+      return post;
+    });
+  }, [id, isAuthenticated, user, navigate, execute]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setSaving(true);
-
     try {
       await postsApi.update(id!, { title, content });
       navigate(`/posts/${id}`);
-    } catch (err) {
+    } catch {
       setError('Failed to update post');
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) {
-    return <div className="loading">Loading post...</div>;
-  }
-
-  if (error && !title) {
-    return <div className="error">{error}</div>;
-  }
+  if (loading) return <div className="loading">Loading post...</div>;
+  if (error && !title) return <div className="error">{error}</div>;
 
   return (
     <div className="card">
@@ -74,16 +59,16 @@ function EditPost() {
             id="title"
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={e => setTitle(e.target.value)}
             required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="content">Content</label>
+          <label htmlFor="content">Content (Markdown supported)</label>
           <textarea
             id="content"
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={e => setContent(e.target.value)}
             required
           />
         </div>
@@ -94,5 +79,3 @@ function EditPost() {
     </div>
   );
 }
-
-export default EditPost;

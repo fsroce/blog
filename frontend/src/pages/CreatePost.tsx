@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { postsApi } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { useAsync } from '../hooks/useAsync';
 
-function CreatePost() {
+export default function CreatePost() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { loading, error, execute } = useAsync();
 
   if (!isAuthenticated) {
     navigate('/login');
@@ -18,17 +18,8 @@ function CreatePost() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const response = await postsApi.create({ title, content });
-      navigate(`/posts/${response.data.id}`);
-    } catch (err) {
-      setError('Failed to create post');
-    } finally {
-      setLoading(false);
-    }
+    const post = await execute(() => postsApi.create({ title, content }).then(r => r.data));
+    if (post) navigate(`/posts/${post.id}`);
   };
 
   return (
@@ -42,16 +33,16 @@ function CreatePost() {
             id="title"
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={e => setTitle(e.target.value)}
             required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="content">Content</label>
+          <label htmlFor="content">Content (Markdown supported)</label>
           <textarea
             id="content"
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={e => setContent(e.target.value)}
             required
           />
         </div>
@@ -62,5 +53,3 @@ function CreatePost() {
     </div>
   );
 }
-
-export default CreatePost;

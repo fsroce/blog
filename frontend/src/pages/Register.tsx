@@ -2,30 +2,24 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { useAsync } from '../hooks/useAsync';
 
-function Register() {
+export default function Register() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { loading, error, execute } = useAsync();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const response = await authApi.register({ username, email, password });
-      login(response.data.token, response.data.user);
+    const result = await execute(() =>
+      authApi.register({ username, email, password }).then(r => r.data)
+    );
+    if (result) {
+      login(result.token, result.user);
       navigate('/');
-    } catch (err: unknown) {
-      const axiosError = err as { response?: { data?: { error?: string } } };
-      setError(axiosError.response?.data?.error || 'Registration failed');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -41,7 +35,7 @@ function Register() {
               id="username"
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value)}
               required
               minLength={3}
             />
@@ -52,7 +46,7 @@ function Register() {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
             />
           </div>
@@ -62,7 +56,7 @@ function Register() {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
               minLength={6}
             />
@@ -78,5 +72,3 @@ function Register() {
     </div>
   );
 }
-
-export default Register;

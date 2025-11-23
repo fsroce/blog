@@ -1,63 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { postsApi } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { useAsync } from '../hooks/useAsync';
+import { Post } from '../types';
 
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  author_id: string;
-  author_username: string;
-  created_at: string;
-  updated_at: string;
-}
-
-function PostDetail() {
+export default function PostDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { data: post, loading, error, execute, setError } = useAsync<Post>();
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await postsApi.getOne(id!);
-        setPost(response.data);
-      } catch (err) {
-        setError('Post not found');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPost();
-  }, [id]);
+    execute(() => postsApi.getOne(id!).then(r => r.data));
+  }, [id, execute]);
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this post?')) {
-      return;
-    }
-
+    if (!confirm('Are you sure you want to delete this post?')) return;
     try {
       await postsApi.delete(id!);
       navigate('/');
-    } catch (err) {
+    } catch {
       setError('Failed to delete post');
     }
   };
 
-  if (loading) {
-    return <div className="loading">Loading post...</div>;
-  }
-
-  if (error || !post) {
-    return <div className="error">{error || 'Post not found'}</div>;
-  }
+  if (loading) return <div className="loading">Loading post...</div>;
+  if (error || !post) return <div className="error">{error || 'Post not found'}</div>;
 
   const isAuthor = user?.id === post.author_id;
 
@@ -71,23 +42,14 @@ function PostDetail() {
         )}
       </div>
       <div className="content markdown-content">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {post.content}
-        </ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
       </div>
-
       {isAuthor && (
         <div className="post-actions">
-          <Link to={`/edit/${post.id}`} className="btn">
-            Edit
-          </Link>
-          <button onClick={handleDelete} className="btn btn-danger">
-            Delete
-          </button>
+          <Link to={`/edit/${post.id}`} className="btn">Edit</Link>
+          <button onClick={handleDelete} className="btn btn-danger">Delete</button>
         </div>
       )}
     </article>
   );
 }
-
-export default PostDetail;
