@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { initDatabase } from './database';
+import { connectDatabase } from './database';
 import authRoutes from './routes/auth';
 import postRoutes from './routes/posts';
 
@@ -13,9 +13,6 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Initialize database
-initDatabase();
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -32,8 +29,11 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Connect to database and start server
+connectDatabase().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
 
 export default app;

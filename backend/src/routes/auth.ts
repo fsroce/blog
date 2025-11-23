@@ -1,9 +1,8 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
 import { body, validationResult } from 'express-validator';
-import db from '../database';
+import User from '../models/User';
 
 const router = Router();
 
@@ -25,9 +24,9 @@ router.post(
 
     try {
       // Check if user exists
-      const existingUser = db.prepare(
-        'SELECT id FROM users WHERE username = ? OR email = ?'
-      ).get(username, email);
+      const existingUser = await User.findOne({
+        $or: [{ username }, { email }]
+      });
 
       if (existingUser) {
         return res.status(400).json({ error: 'Username or email already exists' });
@@ -37,19 +36,21 @@ router.post(
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Create user
-      const userId = uuidv4();
-      db.prepare(
-        'INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)'
-      ).run(userId, username, email, hashedPassword);
+      const user = new User({
+        username,
+        email,
+        password: hashedPassword,
+      });
+      await user.save();
 
       // Generate token
       const secret = process.env.JWT_SECRET || 'default-secret';
-      const token = jwt.sign({ id: userId, username }, secret, { expiresIn: '7d' });
+      const token = jwt.sign({ id: user._id, username }, secret, { expiresIn: '7d' });
 
       res.status(201).json({
         message: 'User created successfully',
         token,
-        user: { id: userId, username, email },
+        user: { id: user._id, username, email },
       });
     } catch (error) {
       console.error('Registration error:', error);
@@ -75,9 +76,7 @@ router.post(
 
     try {
       // Find user
-      const user = db.prepare(
-        'SELECT * FROM users WHERE email = ?'
-      ).get(email) as { id: string; username: string; email: string; password: string } | undefined;
+      const user = await User.findOne({ email });
 
       if (!user) {
         return res.status(401).json({ error: 'Invalid credentials' });
@@ -91,11 +90,11 @@ router.post(
 
       // Generate token
       const secret = process.env.JWT_SECRET || 'default-secret';
-      const token = jwt.sign({ id: user.id, username: user.username }, secret, { expiresIn: '7d' });
+      const token = jwt.sign({ id: user._id, username: user.username }, secret, { expiresIn: '7d' });
 
       res.json({
         token,
-        user: { id: user.id, username: user.username, email: user.email },
+        user: { id: user._id, username: user.username, email: user.email },
       });
     } catch (error) {
       console.error('Login error:', error);

@@ -27,9 +27,6 @@ RUN npm ci --only=production
 # Copy built files
 COPY --from=builder /app/dist ./dist
 
-# Create data directory for SQLite
-RUN mkdir -p /data
-
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=3001

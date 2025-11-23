@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  mongodb:
+    image: mongo:7
+    container_name: blog-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=blog
+    restart: unless-stopped
+
   backend:
     build:
       context: ./backend
@@ -12,8 +23,9 @@ services:
       - NODE_ENV=production
       - PORT=3001
       - JWT_SECRET=your-secret-key-change-in-production
-    volumes:
-      - blog-data:/data
+      - MONGODB_URI=mongodb://mongodb:27017/blog
+    depends_on:
+      - mongodb
     restart: unless-stopped
 
   frontend:
@@ -28,5 +40,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  blog-data:
+  mongodb-data:
     driver: local

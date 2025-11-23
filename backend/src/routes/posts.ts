@@ -1,35 +1,30 @@
-import { Router, Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import { Router, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import db from '../database';
+import Post from '../models/Post';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  excerpt: string;
-  author_id: string;
-  created_at: string;
-  updated_at: string;
-  published: number;
-  author_username?: string;
-}
-
 // Get all posts
-router.get('/', (req: Request, res: Response) => {
+router.get('/', async (req, res) => {
   try {
-    const posts = db.prepare(`
-      SELECT p.*, u.username as author_username
-      FROM posts p
-      JOIN users u ON p.author_id = u.id
-      WHERE p.published = 1
-      ORDER BY p.created_at DESC
-    `).all() as Post[];
+    const posts = await Post.find({ published: true })
+      .populate('author', 'username')
+      .sort({ createdAt: -1 });
 
-    res.json(posts);
+    const formattedPosts = posts.map(post => ({
+      id: post._id,
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt,
+      author_id: post.author._id,
+      author_username: (post.author as { username: string }).username,
+      created_at: post.createdAt,
+      updated_at: post.updatedAt,
+      published: post.published,
+    }));
+
+    res.json(formattedPosts);
   } catch (error) {
     console.error('Get posts error:', error);
     res.status(500).json({ error: 'Failed to fetch posts' });
@@ -37,20 +32,26 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // Get single post
-router.get('/:id', (req: Request, res: Response) => {
+router.get('/:id', async (req, res) => {
   try {
-    const post = db.prepare(`
-      SELECT p.*, u.username as author_username
-      FROM posts p
-      JOIN users u ON p.author_id = u.id
-      WHERE p.id = ?
-    `).get(req.params.id) as Post | undefined;
+    const post = await Post.findById(req.params.id)
+      .populate('author', 'username');
 
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    res.json(post);
+    res.json({
+      id: post._id,
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt,
+      author_id: post.author._id,
+      author_username: (post.author as { username: string }).username,
+      created_at: post.createdAt,
+      updated_at: post.updatedAt,
+      published: post.published,
+    });
   } catch (error) {
     console.error('Get post error:', error);
     res.status(500).json({ error: 'Failed to fetch post' });
@@ -65,7 +66,7 @@ router.post(
     body('title').notEmpty().trim(),
     body('content').notEmpty(),
   ],
-  (req: AuthRequest, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -74,22 +75,29 @@ router.post(
     const { title, content, excerpt, published = true } = req.body;
 
     try {
-      const postId = uuidv4();
       const postExcerpt = excerpt || content.substring(0, 200) + (content.length > 200 ? '...' : '');
 
-      db.prepare(`
-        INSERT INTO posts (id, title, content, excerpt, author_id, published)
-        VALUES (?, ?, ?, ?, ?, ?)
-      `).run(postId, title, content, postExcerpt, req.user!.id, published ? 1 : 0);
+      const post = new Post({
+        title,
+        content,
+        excerpt: postExcerpt,
+        author: req.user!.id,
+        published,
+      });
+      await post.save();
+      await post.populate('author', 'username');
 
-      const newPost = db.prepare(`
-        SELECT p.*, u.username as author_username
-        FROM posts p
-        JOIN users u ON p.author_id = u.id
-        WHERE p.id = ?
-      `).get(postId) as Post;
-
-      res.status(201).json(newPost);
+      res.status(201).json({
+        id: post._id,
+        title: post.title,
+        content: post.content,
+        excerpt: post.excerpt,
+        author_id: post.author._id,
+        author_username: (post.author as { username: string }).username,
+        created_at: post.createdAt,
+        updated_at: post.updatedAt,
+        published: post.published,
+      });
     } catch (error) {
       console.error('Create post error:', error);
       res.status(500).json({ error: 'Failed to create post' });
@@ -105,68 +113,49 @@ router.put(
     body('title').optional().notEmpty().trim(),
     body('content').optional().notEmpty(),
   ],
-  (req: AuthRequest, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      // Check if post exists and belongs to user
-      const existingPost = db.prepare(
-        'SELECT * FROM posts WHERE id = ?'
-      ).get(req.params.id) as Post | undefined;
+      const post = await Post.findById(req.params.id);
 
-      if (!existingPost) {
+      if (!post) {
         return res.status(404).json({ error: 'Post not found' });
       }
 
-      if (existingPost.author_id !== req.user!.id) {
+      if (post.author.toString() !== req.user!.id) {
         return res.status(403).json({ error: 'Not authorized to update this post' });
       }
 
       const { title, content, excerpt, published } = req.body;
-      const updates: string[] = [];
-      const values: (string | number)[] = [];
 
-      if (title !== undefined) {
-        updates.push('title = ?');
-        values.push(title);
-      }
+      if (title !== undefined) post.title = title;
       if (content !== undefined) {
-        updates.push('content = ?');
-        values.push(content);
+        post.content = content;
         if (!excerpt) {
-          updates.push('excerpt = ?');
-          values.push(content.substring(0, 200) + (content.length > 200 ? '...' : ''));
+          post.excerpt = content.substring(0, 200) + (content.length > 200 ? '...' : '');
         }
       }
-      if (excerpt !== undefined) {
-        updates.push('excerpt = ?');
-        values.push(excerpt);
-      }
-      if (published !== undefined) {
-        updates.push('published = ?');
-        values.push(published ? 1 : 0);
-      }
+      if (excerpt !== undefined) post.excerpt = excerpt;
+      if (published !== undefined) post.published = published;
 
-      if (updates.length > 0) {
-        updates.push('updated_at = CURRENT_TIMESTAMP');
-        values.push(req.params.id);
+      await post.save();
+      await post.populate('author', 'username');
 
-        db.prepare(`
-          UPDATE posts SET ${updates.join(', ')} WHERE id = ?
-        `).run(...values);
-      }
-
-      const updatedPost = db.prepare(`
-        SELECT p.*, u.username as author_username
-        FROM posts p
-        JOIN users u ON p.author_id = u.id
-        WHERE p.id = ?
-      `).get(req.params.id) as Post;
-
-      res.json(updatedPost);
+      res.json({
+        id: post._id,
+        title: post.title,
+        content: post.content,
+        excerpt: post.excerpt,
+        author_id: post.author._id,
+        author_username: (post.author as { username: string }).username,
+        created_at: post.createdAt,
+        updated_at: post.updatedAt,
+        published: post.published,
+      });
     } catch (error) {
       console.error('Update post error:', error);
       res.status(500).json({ error: 'Failed to update post' });
@@ -175,22 +164,19 @@ router.put(
 );
 
 // Delete post (auth required)
-router.delete('/:id', authenticateToken, (req: AuthRequest, res: Response) => {
+router.delete('/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    // Check if post exists and belongs to user
-    const existingPost = db.prepare(
-      'SELECT * FROM posts WHERE id = ?'
-    ).get(req.params.id) as Post | undefined;
+    const post = await Post.findById(req.params.id);
 
-    if (!existingPost) {
+    if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    if (existingPost.author_id !== req.user!.id) {
+    if (post.author.toString() !== req.user!.id) {
       return res.status(403).json({ error: 'Not authorized to delete this post' });
     }
 
-    db.prepare('DELETE FROM posts WHERE id = ?').run(req.params.id);
+    await post.deleteOne();
 
     res.json({ message: 'Post deleted successfully' });
   } catch (error) {
