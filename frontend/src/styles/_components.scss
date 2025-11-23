@@ -1,0 +1,392 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// Header
+.header {
+  background: rgba($surface, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid $border;
+  padding: $spacing-md 0;
+  margin-bottom: 3rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  @include mobile {
+    padding: $spacing-sm 0;
+    margin-bottom: $spacing-lg;
+  }
+
+  &-content {
+    @include flex(space-between);
+  }
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  @include gradient-text;
+
+  @include mobile-sm {
+    font-size: 1.25rem;
+  }
+}
+
+// Navigation
+.nav {
+  @include flex($justify: flex-end, $align: center);
+  gap: $spacing-md;
+
+  span {
+    color: $text-muted;
+    font-size: 0.875rem;
+  }
+
+  a {
+    padding: $spacing-xs $spacing-md;
+    border-radius: $radius;
+    transition: all $transition;
+    &:hover { background: $surface-light; }
+  }
+
+  @include mobile {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    background: $surface;
+    flex-direction: column;
+    padding: $spacing-xl $spacing-lg;
+    gap: $spacing-lg;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    transition: right $transition-slow;
+    z-index: 1001;
+    align-items: stretch;
+    border-left: 1px solid $border;
+
+    &.open { right: 0; }
+
+    a, button {
+      width: 100%;
+      text-align: center;
+      padding: 0.875rem $spacing-md;
+      font-size: 1rem;
+    }
+
+    span {
+      text-align: center;
+      padding: $spacing-sm;
+      border-bottom: 1px solid $border;
+    }
+
+    .close-btn {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: $spacing-xs;
+      margin-bottom: $spacing-md;
+      color: $text;
+    }
+  }
+
+  &-overlay {
+    display: none;
+
+    @include mobile {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      visibility: hidden;
+      transition: all $transition-slow;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+
+      &.open {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: $spacing-xs;
+  color: $text;
+
+  @include mobile { display: block; }
+}
+
+// Buttons
+.btn {
+  @include btn-base;
+  background: linear-gradient(135deg, $primary, $primary-dark);
+  color: white;
+  box-shadow: 0 4px 14px rgba($primary, 0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba($primary, 0.5);
+  }
+
+  &:active { transform: translateY(0); }
+
+  &-secondary {
+    background: $surface-light;
+    box-shadow: $shadow-sm;
+    &:hover {
+      background: $surface;
+      box-shadow: $shadow-sm;
+    }
+  }
+
+  &-danger {
+    background: linear-gradient(135deg, $error, #dc2626);
+    box-shadow: 0 4px 14px rgba($error, 0.4);
+    &:hover { box-shadow: 0 6px 20px rgba($error, 0.5); }
+  }
+
+  @include mobile {
+    padding: 0.875rem $spacing-md;
+    width: 100%;
+  }
+}
+
+// Forms
+.form-group {
+  margin-bottom: $spacing-lg;
+
+  label {
+    display: block;
+    margin-bottom: $spacing-xs;
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 0.875rem $spacing-md;
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius;
+    font-size: 1rem;
+    color: $text;
+    transition: all $transition;
+    font-family: inherit;
+
+    &::placeholder { color: $text-muted; }
+    &:focus { @include input-focus; }
+
+    @include mobile {
+      padding: 0.875rem;
+      font-size: 16px; // Prevent iOS zoom
+    }
+  }
+
+  textarea {
+    min-height: 250px;
+    resize: vertical;
+
+    @include mobile { min-height: 180px; }
+  }
+}
+
+// Cards
+.card {
+  @include card;
+  box-shadow: $shadow;
+
+  @include mobile { padding: $spacing-lg; }
+}
+
+// Posts
+.posts-list {
+  display: grid;
+  gap: $spacing-lg;
+}
+
+.post-card {
+  @include card(1.75rem);
+  box-shadow: $shadow-sm;
+  transition: all $transition-slow;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, $primary, $secondary);
+    opacity: 0;
+    transition: opacity $transition-slow;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow;
+    border-color: $primary;
+    &::before { opacity: 1; }
+
+    @include mobile { transform: none; }
+  }
+
+  h2 {
+    margin-bottom: $spacing-sm;
+    font-size: 1.25rem;
+    font-weight: 600;
+
+    a {
+      color: $text;
+      &:hover { color: $primary-light; }
+    }
+
+    @include mobile { font-size: 1.1rem; }
+  }
+
+  .meta {
+    color: $text-muted;
+    font-size: 0.8rem;
+    margin-bottom: $spacing-md;
+    @include flex($justify: flex-start);
+    gap: $spacing-xs;
+  }
+
+  .excerpt {
+    color: $text-muted;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  @include mobile { padding: 1.25rem; }
+}
+
+// Post Detail
+.post-detail {
+  @include card(2.5rem);
+  box-shadow: $shadow;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: $spacing-md;
+    @include gradient-text($text, $text-muted);
+
+    @include mobile { font-size: 1.5rem; }
+    @include mobile-sm { font-size: 1.3rem; }
+  }
+
+  .meta {
+    color: $text-muted;
+    margin-bottom: $spacing-xl;
+    padding-bottom: $spacing-lg;
+    border-bottom: 1px solid $border;
+    font-size: 0.875rem;
+  }
+
+  .content { line-height: 1.8; }
+
+  @include mobile { padding: $spacing-lg; }
+}
+
+.post-actions {
+  margin-top: 2.5rem;
+  padding-top: $spacing-lg;
+  border-top: 1px solid $border;
+  @include flex($justify: flex-start);
+  gap: $spacing-md;
+
+  @include mobile {
+    flex-direction: column;
+    .btn { width: 100%; }
+  }
+}
+
+// Auth
+.auth-container {
+  max-width: 420px;
+  margin: $spacing-xl auto;
+
+  h1 {
+    text-align: center;
+    margin-bottom: $spacing-xl;
+    font-size: 1.75rem;
+    @include gradient-text;
+  }
+
+  .card { padding: 2.5rem; }
+
+  .switch-link {
+    text-align: center;
+    margin-top: $spacing-lg;
+    color: $text-muted;
+    font-size: 0.875rem;
+  }
+
+  @include mobile {
+    margin: $spacing-md auto;
+    padding: 0 10px;
+    .card { padding: $spacing-lg; }
+  }
+}
+
+// Messages
+.error, .success {
+  padding: $spacing-md;
+  border-radius: $radius;
+  margin-bottom: $spacing-md;
+}
+
+.error {
+  background: rgba($error, 0.1);
+  color: #fca5a5;
+  border: 1px solid rgba($error, 0.3);
+}
+
+.success {
+  background: rgba($success, 0.1);
+  color: #6ee7b7;
+  border: 1px solid rgba($success, 0.3);
+}
+
+// States
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: $text-muted;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem $spacing-xl;
+  color: $text-muted;
+
+  h2 {
+    margin-bottom: $spacing-xs;
+    color: $text;
+  }
+
+  @include mobile {
+    padding: 3rem $spacing-md;
+    h2 { font-size: 1.2rem; }
+  }
+}
+
+// Touch
+@include mobile {
+  a, button {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
