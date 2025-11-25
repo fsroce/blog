@@ -25,9 +25,9 @@ export const authApi = {
 export const postsApi = {
   getAll: () => api.get('/posts'),
   getOne: (id: string) => api.get(`/posts/${id}`),
-  create: (data: { title: string; content: string }) =>
+  create: (data: { title: string; content: string; published?: boolean }) =>
     api.post('/posts', data),
-  update: (id: string, data: { title?: string; content?: string }) =>
+  update: (id: string, data: { title?: string; content?: string; published?: boolean }) =>
     api.put(`/posts/${id}`, data),
   delete: (id: string) => api.delete(`/posts/${id}`),
 };

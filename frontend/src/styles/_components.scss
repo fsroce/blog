@@ -390,3 +390,105 @@
     -webkit-tap-highlight-color: transparent;
   }
 }
+
+// Search Bar
+.search-bar {
+  position: relative;
+  margin-bottom: $spacing-xl;
+
+  .search-input {
+    width: 100%;
+    padding: 0.875rem 3rem 0.875rem 1rem;
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius;
+    font-size: 1rem;
+    color: $text;
+    transition: all $transition;
+
+    &::placeholder { color: $text-muted; }
+    &:focus { @include input-focus; }
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: $text-muted;
+    cursor: pointer;
+    font-size: 1.25rem;
+    padding: 0.25rem;
+    transition: color $transition;
+
+    &:hover { color: $text; }
+  }
+}
+
+// Scroll to Top Button
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3rem;
+  height: 3rem;
+  background: linear-gradient(135deg, $primary, $primary-dark);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba($primary, 0.4);
+  transition: all $transition;
+  z-index: 99;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba($primary, 0.5);
+  }
+
+  @include mobile {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.25rem;
+  }
+}
+
+// Form Actions & Checkbox
+.form-actions {
+  @include flex($justify: flex-start);
+  gap: $spacing-md;
+
+  @include mobile {
+    flex-direction: column;
+    .btn { width: 100%; }
+  }
+}
+
+.checkbox-group {
+  label {
+    @include flex($justify: flex-start);
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      margin-right: $spacing-xs;
+      width: auto;
+      cursor: pointer;
+      accent-color: $primary;
+    }
+
+    span {
+      user-select: none;
+    }
+  }
+}
+
+// Reading Time
+.reading-time {
+  color: $text-muted;
+  font-weight: normal;
+}

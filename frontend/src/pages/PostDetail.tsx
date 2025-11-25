@@ -6,6 +6,8 @@ import { postsApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useAsync } from '../hooks/useAsync';
 import { Post } from '../types';
+import CodeBlock from '../components/CodeBlock';
+import { calculateReadingTime, formatDate } from '../utils';
 
 export default function PostDetail() {
   const { id } = useParams<{ id: string }>();
@@ -31,18 +33,27 @@ export default function PostDetail() {
   if (error || !post) return <div className="error">{error || 'Post not found'}</div>;
 
   const isAuthor = user?.id === post.author_id;
+  const readingTime = calculateReadingTime(post.content);
 
   return (
     <article className="post-detail">
       <h1>{post.title}</h1>
       <div className="meta">
-        By {post.author_username} • {new Date(post.created_at).toLocaleDateString()}
+        By {post.author_username} • {formatDate(post.created_at)}
         {post.updated_at !== post.created_at && (
-          <> • Updated {new Date(post.updated_at).toLocaleDateString()}</>
+          <> • Updated {formatDate(post.updated_at)}</>
         )}
+        <span className="reading-time"> • {readingTime} min read</span>
       </div>
       <div className="content markdown-content">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            code: CodeBlock
+          }}
+        >
+          {post.content}
+        </ReactMarkdown>
       </div>
       {isAuthor && (
         <div className="post-actions">

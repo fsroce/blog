@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import PostDetail from './pages/PostDetail';
 import CreatePost from './pages/CreatePost';
@@ -23,6 +24,7 @@ function App() {
             <Route path="/register" element={<Register />} />
           </Routes>
         </main>
+        <ScrollToTop />
       </Router>
     </AuthProvider>
   );
