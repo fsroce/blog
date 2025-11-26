@@ -1,18 +1,22 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { postsApi } from '../api';
 import { useAsync } from '../hooks/useAsync';
 import { Post } from '../types';
 import SearchBar from '../components/SearchBar';
+import TagList from '../components/TagList';
+import { SkeletonPost } from '../components/Skeleton';
 import { calculateReadingTime, formatDate } from '../utils';
 
 export default function Home() {
   const { data: posts, loading, error, execute } = useAsync<Post[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedTag = searchParams.get('tag');
 
   useEffect(() => {
-    execute(() => postsApi.getAll().then(r => r.data));
-  }, [execute]);
+    execute(() => postsApi.getAll(selectedTag || undefined).then(r => r.data));
+  }, [execute, selectedTag]);
 
   const filteredPosts = useMemo(() => {
     if (!posts) return [];
@@ -26,11 +30,25 @@ export default function Home() {
     );
   }, [posts, searchQuery]);
 
-  if (loading) return <div className="loading">Loading posts...</div>;
+  if (loading) {
+    return (
+      <div className="posts-list">
+        {[1, 2, 3].map(i => <SkeletonPost key={i} />)}
+      </div>
+    );
+  }
+
   if (error) return <div className="error">{error}</div>;
 
   return (
     <>
+      {selectedTag && (
+        <div className="filter-info">
+          Filtered by tag: <strong>{selectedTag}</strong>
+          <button onClick={() => setSearchParams({})} className="btn-link">Clear filter</button>
+        </div>
+      )}
+
       {posts && posts.length > 0 && (
         <SearchBar onSearch={setSearchQuery} />
       )}
@@ -47,8 +65,13 @@ export default function Home() {
               <h2><Link to={`/posts/${post.id}`}>{post.title}</Link></h2>
               <div className="meta">
                 By {post.author_username} • {formatDate(post.created_at)} • {calculateReadingTime(post.content)} min read
+                {post.viewCount > 0 && <> • {post.viewCount} views</>}
               </div>
               <p className="excerpt">{post.excerpt}</p>
+              <TagList tags={post.tags} />
+              <div className="post-stats">
+                <span className="likes">❤️ {post.likes}</span>
+              </div>
             </article>
           ))}
         </div>

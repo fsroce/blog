@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { postsApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useAsync } from '../hooks/useAsync';
+import TagInput from '../components/TagInput';
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function CreatePost() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [published, setPublished] = useState(true);
+  const [tags, setTags] = useState<string[]>([]);
   const { loading, error, execute } = useAsync();
 
   if (!isAuthenticated) {
@@ -20,9 +22,11 @@ export default function CreatePost() {
   const handleSubmit = async (e: React.FormEvent, saveAsDraft = false) => {
     e.preventDefault();
     const post = await execute(() =>
-      postsApi.create({ title, content, published: saveAsDraft ? false : published }).then(r => r.data)
+      postsApi.create({ title, content, published: saveAsDraft ? false : published, tags }).then(r => r.data)
     );
-    if (post) navigate(`/posts/${post.id}`);
+    if (post && typeof post === 'object' && 'id' in post) {
+      navigate(`/posts/${(post as { id: string }).id}`);
+    }
   };
 
   return (
@@ -48,6 +52,10 @@ export default function CreatePost() {
             onChange={e => setContent(e.target.value)}
             required
           />
+        </div>
+        <div className="form-group">
+          <label>Tags</label>
+          <TagInput tags={tags} onChange={setTags} />
         </div>
         <div className="form-group checkbox-group">
           <label>

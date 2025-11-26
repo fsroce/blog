@@ -6,6 +6,10 @@ export interface IPost extends Document {
   excerpt: string;
   author: mongoose.Types.ObjectId;
   published: boolean;
+  tags: string[];
+  likes: mongoose.Types.ObjectId[];
+  viewCount: number;
+  coverImage?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,11 +36,29 @@ const postSchema = new Schema<IPost>({
     type: Boolean,
     default: true,
   },
+  tags: {
+    type: [String],
+    default: [],
+    index: true,
+  },
+  likes: {
+    type: [Schema.Types.ObjectId],
+    ref: 'User',
+    default: [],
+  },
+  viewCount: {
+    type: Number,
+    default: 0,
+  },
+  coverImage: {
+    type: String,
+  },
 }, {
   timestamps: true,
 });
 
 postSchema.index({ author: 1 });
 postSchema.index({ createdAt: -1 });
+postSchema.index({ tags: 1 });
 
 export default mongoose.model<IPost>('Post', postSchema);

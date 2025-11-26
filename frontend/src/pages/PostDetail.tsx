@@ -7,6 +7,11 @@ import { useAuth } from '../context/AuthContext';
 import { useAsync } from '../hooks/useAsync';
 import { Post } from '../types';
 import CodeBlock from '../components/CodeBlock';
+import TagList from '../components/TagList';
+import LikeButton from '../components/LikeButton';
+import ShareButton from '../components/ShareButton';
+import RelatedPosts from '../components/RelatedPosts';
+import { SkeletonPostDetail } from '../components/Skeleton';
 import { calculateReadingTime, formatDate } from '../utils';
 
 export default function PostDetail() {
@@ -29,38 +34,52 @@ export default function PostDetail() {
     }
   };
 
-  if (loading) return <div className="loading">Loading post...</div>;
+  if (loading) return <SkeletonPostDetail />;
   if (error || !post) return <div className="error">{error || 'Post not found'}</div>;
 
   const isAuthor = user?.id === post.author_id;
   const readingTime = calculateReadingTime(post.content);
 
   return (
-    <article className="post-detail">
-      <h1>{post.title}</h1>
-      <div className="meta">
-        By {post.author_username} • {formatDate(post.created_at)}
-        {post.updated_at !== post.created_at && (
-          <> • Updated {formatDate(post.updated_at)}</>
-        )}
-        <span className="reading-time"> • {readingTime} min read</span>
-      </div>
-      <div className="content markdown-content">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          components={{
-            code: CodeBlock
-          }}
-        >
-          {post.content}
-        </ReactMarkdown>
-      </div>
-      {isAuthor && (
-        <div className="post-actions">
-          <Link to={`/edit/${post.id}`} className="btn">Edit</Link>
-          <button onClick={handleDelete} className="btn btn-danger">Delete</button>
+    <>
+      <article className="post-detail">
+        <h1>{post.title}</h1>
+        <div className="meta">
+          By {post.author_username} • {formatDate(post.created_at)}
+          {post.updated_at !== post.created_at && (
+            <> • Updated {formatDate(post.updated_at)}</>
+          )}
+          <span className="reading-time"> • {readingTime} min read</span>
+          {post.viewCount > 0 && <> • {post.viewCount} views</>}
         </div>
-      )}
-    </article>
+
+        <TagList tags={post.tags} />
+
+        <div className="post-interaction">
+          <LikeButton postId={post.id} initialLikes={post.likes} />
+          <ShareButton title={post.title} url={`/posts/${post.id}`} />
+        </div>
+
+        <div className="content markdown-content">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              code: CodeBlock
+            }}
+          >
+            {post.content}
+          </ReactMarkdown>
+        </div>
+
+        {isAuthor && (
+          <div className="post-actions">
+            <Link to={`/edit/${post.id}`} className="btn">Edit</Link>
+            <button onClick={handleDelete} className="btn btn-danger">Delete</button>
+          </div>
+        )}
+      </article>
+
+      <RelatedPosts postId={post.id} />
+    </>
   );
 }
