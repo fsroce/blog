@@ -4,6 +4,7 @@ import { postsApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useAsync } from '../hooks/useAsync';
 import { Post } from '../types';
+import TagInput from '../components/TagInput';
 
 export default function EditPost() {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +12,7 @@ export default function EditPost() {
   const { isAuthenticated, user } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const { loading, error, execute, setError } = useAsync<Post>();
   const [saving, setSaving] = useState(false);
 
@@ -28,6 +30,7 @@ export default function EditPost() {
       }
       setTitle(post.title);
       setContent(post.content);
+      setTags(post.tags || []);
       return post;
     });
   }, [id, isAuthenticated, user, navigate, execute]);
@@ -36,7 +39,7 @@ export default function EditPost() {
     e.preventDefault();
     setSaving(true);
     try {
-      await postsApi.update(id!, { title, content });
+      await postsApi.update(id!, { title, content, tags });
       navigate(`/posts/${id}`);
     } catch {
       setError('Failed to update post');
@@ -71,6 +74,10 @@ export default function EditPost() {
             onChange={e => setContent(e.target.value)}
             required
           />
+        </div>
+        <div className="form-group">
+          <label>Tags</label>
+          <TagInput tags={tags} onChange={setTags} />
         </div>
         <button type="submit" className="btn" disabled={saving}>
           {saving ? 'Saving...' : 'Save Changes'}

@@ -23,12 +23,15 @@ export const authApi = {
 
 // Posts API
 export const postsApi = {
-  getAll: () => api.get('/posts'),
+  getAll: (tag?: string) => api.get('/posts', { params: { tag } }),
   getOne: (id: string) => api.get(`/posts/${id}`),
-  create: (data: { title: string; content: string }) =>
+  getRelated: (id: string) => api.get(`/posts/${id}/related`),
+  getAllTags: () => api.get('/posts/tags/all'),
+  create: (data: { title: string; content: string; published?: boolean; tags?: string[]; coverImage?: string }) =>
     api.post('/posts', data),
-  update: (id: string, data: { title?: string; content?: string }) =>
+  update: (id: string, data: { title?: string; content?: string; published?: boolean; tags?: string[]; coverImage?: string }) =>
     api.put(`/posts/${id}`, data),
+  toggleLike: (id: string) => api.post(`/posts/${id}/like`),
   delete: (id: string) => api.delete(`/posts/${id}`),
 };
 

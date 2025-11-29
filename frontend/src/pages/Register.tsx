@@ -4,13 +4,18 @@ import { authApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useAsync } from '../hooks/useAsync';
 
+interface RegisterResponse {
+  token: string;
+  user: { id: string; username: string; email: string };
+}
+
 export default function Register() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { loading, error, execute } = useAsync();
+  const { loading, error, execute } = useAsync<RegisterResponse>();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

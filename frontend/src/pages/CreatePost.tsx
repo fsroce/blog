@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { postsApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useAsync } from '../hooks/useAsync';
+import TagInput from '../components/TagInput';
 
 export default function CreatePost() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [published, setPublished] = useState(true);
+  const [tags, setTags] = useState<string[]>([]);
   const { loading, error, execute } = useAsync();
 
   if (!isAuthenticated) {
@@ -16,10 +19,14 @@ export default function CreatePost() {
     return null;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent, saveAsDraft = false) => {
     e.preventDefault();
-    const post = await execute(() => postsApi.create({ title, content }).then(r => r.data));
-    if (post) navigate(`/posts/${post.id}`);
+    const post = await execute(() =>
+      postsApi.create({ title, content, published: saveAsDraft ? false : published, tags }).then(r => r.data)
+    );
+    if (post && typeof post === 'object' && 'id' in post) {
+      navigate(`/posts/${(post as { id: string }).id}`);
+    }
   };
 
   return (
@@ -46,9 +53,35 @@ export default function CreatePost() {
             required
           />
         </div>
-        <button type="submit" className="btn" disabled={loading}>
-          {loading ? 'Creating...' : 'Create Post'}
-        </button>
+        <div className="form-group">
+          <label>Tags</label>
+          <TagInput tags={tags} onChange={setTags} />
+        </div>
+        <div className="form-group checkbox-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={published}
+              onChange={e => setPublished(e.target.checked)}
+            />
+            <span>Publish immediately</span>
+          </label>
+        </div>
+        <div className="form-actions">
+          <button type="submit" className="btn" disabled={loading}>
+            {loading ? 'Saving...' : published ? 'Publish' : 'Save as Draft'}
+          </button>
+          {published && (
+            <button
+              type="button"
+              onClick={(e: any) => handleSubmit(e, true)}
+              className="btn btn-secondary"
+              disabled={loading}
+            >
+              Save as Draft
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

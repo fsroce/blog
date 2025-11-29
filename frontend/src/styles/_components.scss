@@ -390,3 +390,444 @@
     -webkit-tap-highlight-color: transparent;
   }
 }
+
+// Search Bar
+.search-bar {
+  position: relative;
+  margin-bottom: $spacing-xl;
+
+  .search-input {
+    width: 100%;
+    padding: 0.875rem 3rem 0.875rem 1rem;
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius;
+    font-size: 1rem;
+    color: $text;
+    transition: all $transition;
+
+    &::placeholder { color: $text-muted; }
+    &:focus { @include input-focus; }
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: $text-muted;
+    cursor: pointer;
+    font-size: 1.25rem;
+    padding: 0.25rem;
+    transition: color $transition;
+
+    &:hover { color: $text; }
+  }
+}
+
+// Scroll to Top Button
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3rem;
+  height: 3rem;
+  background: linear-gradient(135deg, $primary, $primary-dark);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba($primary, 0.4);
+  transition: all $transition;
+  z-index: 99;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba($primary, 0.5);
+  }
+
+  @include mobile {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.25rem;
+  }
+}
+
+// Form Actions & Checkbox
+.form-actions {
+  @include flex($justify: flex-start);
+  gap: $spacing-md;
+
+  @include mobile {
+    flex-direction: column;
+    .btn { width: 100%; }
+  }
+}
+
+.checkbox-group {
+  label {
+    @include flex($justify: flex-start);
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      margin-right: $spacing-xs;
+      width: auto;
+      cursor: pointer;
+      accent-color: $primary;
+    }
+
+    span {
+      user-select: none;
+    }
+  }
+}
+
+// Reading Time
+.reading-time {
+  color: $text-muted;
+  font-weight: normal;
+}
+
+// Tags
+.tag-list {
+  @include flex($justify: flex-start);
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+  margin: $spacing-md 0;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: 0.375rem 0.75rem;
+  background: rgba($primary, 0.1);
+  color: $primary-light;
+  border-radius: $radius;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all $transition;
+  border: 1px solid rgba($primary, 0.2);
+
+  &:hover {
+    background: rgba($primary, 0.2);
+    border-color: rgba($primary, 0.3);
+    transform: translateY(-1px);
+  }
+}
+
+.tag-input {
+  .tag-list {
+    margin-bottom: $spacing-sm;
+  }
+
+  .tag {
+    background: rgba($secondary, 0.1);
+    color: $secondary-light;
+    border-color: rgba($secondary, 0.2);
+
+    &:hover {
+      background: rgba($secondary, 0.15);
+    }
+  }
+
+  .tag-remove {
+    background: none;
+    border: none;
+    color: $secondary-light;
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+    padding: 0;
+    margin-left: $spacing-xs;
+    transition: color $transition;
+
+    &:hover {
+      color: $error;
+    }
+  }
+
+  input {
+    margin-top: $spacing-sm;
+  }
+}
+
+// Like Button
+.like-button {
+  @include flex($justify: center);
+  gap: $spacing-xs;
+  padding: 0.625rem 1.25rem;
+  background: rgba($primary, 0.1);
+  border: 1px solid rgba($primary, 0.2);
+  border-radius: $radius;
+  cursor: pointer;
+  transition: all $transition;
+  font-size: 1rem;
+  color: $text;
+
+  .like-icon {
+    font-size: 1.25rem;
+    transition: transform $transition;
+  }
+
+  .like-count {
+    font-weight: 600;
+    color: $primary-light;
+  }
+
+  &:hover {
+    background: rgba($primary, 0.2);
+    border-color: rgba($primary, 0.3);
+    transform: translateY(-2px);
+
+    .like-icon {
+      transform: scale(1.1);
+    }
+  }
+
+  &.liked {
+    background: rgba($error, 0.1);
+    border-color: rgba($error, 0.3);
+
+    .like-count {
+      color: $error;
+    }
+
+    &:hover {
+      background: rgba($error, 0.15);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @include mobile {
+    padding: 0.75rem 1.5rem;
+    width: auto;
+  }
+}
+
+// Post Stats
+.post-stats {
+  @include flex($justify: flex-start);
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+  color: $text-muted;
+  font-size: 0.875rem;
+
+  .likes {
+    @include flex($justify: flex-start);
+    gap: $spacing-xs;
+  }
+}
+
+// Post Interaction
+.post-interaction {
+  margin: $spacing-lg 0;
+  padding: $spacing-lg 0;
+  border-top: 1px solid $border;
+  border-bottom: 1px solid $border;
+  @include flex($justify: flex-start);
+  gap: $spacing-md;
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+// Related Posts
+.related-posts {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid $border;
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: $spacing-lg;
+    @include gradient-text;
+
+    @include mobile {
+      font-size: 1.25rem;
+    }
+  }
+
+  .posts-list {
+    gap: $spacing-md;
+  }
+
+  .post-card {
+    h3 {
+      margin-bottom: $spacing-sm;
+      font-size: 1.1rem;
+      font-weight: 600;
+
+      a {
+        color: $text;
+        &:hover { color: $primary-light; }
+      }
+
+      @include mobile {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// Filter Info
+.filter-info {
+  @include flex($justify: space-between);
+  padding: $spacing-md;
+  background: rgba($primary, 0.1);
+  border: 1px solid rgba($primary, 0.2);
+  border-radius: $radius;
+  margin-bottom: $spacing-lg;
+  font-size: 0.875rem;
+
+  strong {
+    color: $primary-light;
+    font-weight: 600;
+  }
+
+  @include mobile {
+    flex-direction: column;
+    gap: $spacing-sm;
+    text-align: center;
+  }
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: $primary-light;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  transition: color $transition;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+// Skeleton Loading
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.skeleton {
+  pointer-events: none;
+
+  .skeleton-title,
+  .skeleton-title-large,
+  .skeleton-meta,
+  .skeleton-text,
+  .skeleton-text-short,
+  .skeleton-tags {
+    background: linear-gradient(
+      90deg,
+      rgba($surface-light, 0.5) 0%,
+      rgba($surface-light, 0.8) 50%,
+      rgba($surface-light, 0.5) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+    border-radius: $radius;
+    margin-bottom: $spacing-md;
+  }
+
+  .skeleton-title {
+    height: 1.5rem;
+    width: 70%;
+  }
+
+  .skeleton-title-large {
+    height: 2rem;
+    width: 80%;
+  }
+
+  .skeleton-meta {
+    height: 0.875rem;
+    width: 50%;
+  }
+
+  .skeleton-text {
+    height: 1rem;
+    width: 100%;
+  }
+
+  .skeleton-text-short {
+    width: 60%;
+  }
+
+  .skeleton-tags {
+    height: 1.5rem;
+    width: 40%;
+  }
+}
+
+// Share Button
+.share-button {
+  position: relative;
+
+  .share-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius;
+    box-shadow: $shadow;
+    padding: $spacing-xs;
+    min-width: 180px;
+    z-index: 10;
+    animation: fadeIn 0.2s ease-out;
+
+    @include mobile {
+      left: auto;
+      right: 0;
+    }
+  }
+
+  .share-option {
+    display: block;
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    background: none;
+    border: none;
+    color: $text;
+    text-align: left;
+    cursor: pointer;
+    border-radius: $radius;
+    transition: all $transition;
+    font-size: 0.875rem;
+
+    &:hover {
+      background: $surface-light;
+      color: $primary-light;
+    }
+
+    & + .share-option {
+      margin-top: $spacing-xs;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
